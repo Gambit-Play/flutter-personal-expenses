@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/widgets/chart.dart';
 
 import './widgets/transaction_list.dart';
 import './models/transaction.dart';
@@ -14,6 +15,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
         accentColor: Colors.orange,
+        fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+              headline6: TextStyle(
+                fontFamily: 'OpenSans',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              button: TextStyle(color: Colors.white),
+            ),
+        appBarTheme: AppBarTheme(
+          textTheme: ThemeData.light().textTheme.copyWith(
+                headline6: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+        ),
       ),
       title: 'Personal Expenses',
       home: MyHomePage(),
@@ -53,6 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => _userTransactions.add(newTransaction));
   }
 
+  List<Transaction> get _recentTransactions {
+    return _userTransactions
+        .where(
+          (tx) => tx.date.isAfter(DateTime.now().subtract(Duration(days: 7))),
+        )
+        .toList();
+  }
+
   void _startAddNewTransaction(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -78,14 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 5,
-                child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: Text('CHART'),
-                ),
-              ),
+              Chart(_recentTransactions),
               TransactionList(_userTransactions),
             ],
           ),
