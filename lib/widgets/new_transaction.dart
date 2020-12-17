@@ -11,19 +11,21 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
 
   DateTime _pickedDate;
 
   void _submitTransaction() {
-    final _enteredTitle = titleController.text;
-    final _enteredAmount = double.parse(amountController.text);
-    final _isInvalid = _enteredTitle.isEmpty || _enteredAmount <= 0;
+    if (_amountController.text.isEmpty) return;
+
+    final _enteredTitle = _titleController.text;
+    final _enteredAmount = double.parse(_amountController.text);
+    final _isInvalid = _enteredTitle.isEmpty || _enteredAmount <= 0 || _pickedDate == null;
 
     if (_isInvalid) return;
 
-    widget.addTransaction(_enteredTitle, _enteredAmount);
+    widget.addTransaction(_enteredTitle, _enteredAmount, _pickedDate);
 
     Navigator.of(context).pop();
   }
@@ -49,20 +51,22 @@ class _NewTransactionState extends State<NewTransaction> {
         children: [
           TextField(
             decoration: InputDecoration(labelText: 'Title'),
-            controller: titleController,
+            controller: _titleController,
           ),
           TextField(
             decoration: InputDecoration(labelText: 'Amount'),
-            controller: amountController,
+            controller: _amountController,
             keyboardType: TextInputType.number,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(children: [
-              Text(
-                _pickedDate == null
-                    ? 'No Date Chosen!'
-                    : 'Picked Date : ${DateFormat('d MMM yyyy').format(_pickedDate)}',
+              Expanded(
+                child: Text(
+                  _pickedDate == null
+                      ? 'No Date Chosen!'
+                      : 'Picked Date : ${DateFormat('d MMM yyyy').format(_pickedDate)}',
+                ),
               ),
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
